@@ -1,8 +1,7 @@
 const logoutButton = new LogoutButton();
 logoutButton.action = () => {
     ApiConnector.logout(response => {
-        console.log(response);
-        if (response.success === true) {
+        if (response.success) {
             location.reload();
         };
     });
@@ -10,8 +9,7 @@ logoutButton.action = () => {
 
 let getProfile = () => {
     ApiConnector.current(responseProfile => {
-        console.log(responseProfile);
-        if (responseProfile.success === true) {
+        if (responseProfile.success) {
             ProfileWidget.showProfile(responseProfile.data);
         };
     });
@@ -22,26 +20,23 @@ getProfile();
 const ratesBoard = new RatesBoard();
 let getRates = () => {
     ApiConnector.getStocks(responseRates => {
-        console.log(responseRates);
-        if (responseRates.success === true) {
+        if (responseRates.success) {
             ratesBoard.clearTable();
             ratesBoard.fillTable(responseRates.data);
-            setInterval(() => {
-                ratesBoard.clearTable();
-                ratesBoard.fillTable(responseRates.data);
-            }, 60000);
         };
     })
 }
 
 getRates();
 
+setInterval(() => {
+    getRates();
+}, 60000);
+
 const moneyManager = new MoneyManager();
 moneyManager.addMoneyCallback = (data) => {
     ApiConnector.addMoney(data, response => {
-        console.log(response);
-        if (response.success === true) {
-            getProfile();
+        if (response.success) {
             moneyManager.setMessage(response.success, "Ваш счет успешно пополнен");
             location.reload();
         } else {
@@ -53,9 +48,7 @@ moneyManager.addMoneyCallback = (data) => {
 
 moneyManager.conversionMoneyCallback = (data) => {
     ApiConnector.convertMoney(data, response => {
-        console.log(response);
-        if (response.success === true) {
-            getProfile();
+        if (response.success) {
             moneyManager.setMessage(response.success, "Валюта успешно конвертирована");
             location.reload();
         } else {
@@ -66,9 +59,7 @@ moneyManager.conversionMoneyCallback = (data) => {
 
 moneyManager.sendMoneyCallback = (data) => {
     ApiConnector.transferMoney(data, response => {
-        console.log(response);
-        if (response.success === true) {
-            getProfile();
+        if (response.success) {
             moneyManager.setMessage(response.success, "Валюта успешно конвертирована");
             location.reload();
         } else {
@@ -80,7 +71,7 @@ moneyManager.sendMoneyCallback = (data) => {
 const favoritesWidget = new FavoritesWidget();
 ApiConnector.getFavorites(response => {
     console.log(response);
-    if (response.success === true) {
+    if (response.success) {
         favoritesWidget.clearTable();
         favoritesWidget.fillTable(response.data);
         moneyManager.updateUsersList(response.data);
@@ -89,8 +80,7 @@ ApiConnector.getFavorites(response => {
 
 favoritesWidget.addUserCallback = (data) => {
     ApiConnector.addUserToFavorites(data, response => {
-        console.log(response);
-        if (response.success === true) {
+        if (response.success) {
             favoritesWidget.clearTable();
             favoritesWidget.fillTable(response.data);
             moneyManager.updateUsersList(response.data);
@@ -103,8 +93,7 @@ favoritesWidget.addUserCallback = (data) => {
 
 favoritesWidget.removeUserCallback = (data) => {
     ApiConnector.removeUserFromFavorites(data, response => {
-        console.log(response);
-        if (response.success === true) {
+        if (response.success) {
             favoritesWidget.clearTable();
             favoritesWidget.fillTable(response.data);
             moneyManager.updateUsersList(response.data);
